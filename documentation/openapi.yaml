@@ -1,0 +1,481 @@
+openapi: 3.0.0
+info:
+  description: API permettant de consulter des informations concernants des produits alimentaires, le tout via un systeme de gestion d'utilisateur
+  version: 1.0.0
+  title: OpenFoodCRUD
+
+servers:
+  - url: https://localhost:3000
+    description: Developpement
+
+tags:
+  - name: user
+    description: Gestion des utilisateurs
+  - name: product
+    description: Gestion des produits
+  - name: info
+    description: Gestion des informations de l'API OpenFoodFact
+
+paths:
+  /user:
+    get:
+      tags:
+        - user
+      summary: Permet d'identifier un utilisateur
+      parameters:
+        - $ref: "#/components/parameters/username"
+        - $ref: "#/components/parameters/password"
+      responses:
+        "200":
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessUserConnexion"
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
+    post:
+      tags:
+        - user
+      summary: Crée un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessUserConnexion"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conflict"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
+    patch:
+      tags:
+        - user
+      summary: Modifie les informations d'un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
+      responses:
+        "201": 
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessUserConnexion"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
+  /product:
+    get:
+      tags:
+        - product
+      summary: Récupère la liste de tout les produits enregistrés
+      parameters:
+        - $ref: "#/components/parameters/token"
+        - $ref: "#/components/parameters/bar_code"
+      responses:
+        "200":
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessFetchProductList"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
+    delete:
+      tags:
+        - product
+      summary: Supprime tous les produits enregistrés
+      parameters:
+        - $ref: "#/components/parameters/token"
+      responses:
+        "204":
+          description: Success Response no content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessNoContent"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
+  /product/{bar_code}:
+    get:
+      tags:
+        - product
+      summary: Récupère les informations concernant un produit d'un utilisateur
+      parameters:
+        - $ref: "#/components/parameters/token"
+        - $ref: "#/components/parameters/bar_code"
+      responses:
+        "200":
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessProductFetch"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
+    post:
+      tags:
+        - product
+      summary: Ajoute un produit à la liste d'un utilisateur
+      parameters:
+        - $ref: "#/components/parameters/token"
+        - $ref: "#/components/parameters/bar_code"
+      responses:
+        "200":
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessProductFetch"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
+    delete:
+      tags:
+        - product
+      summary: Supprime un produit de la liste d'un utilisateur
+      parameters:
+        - $ref: "#/components/parameters/token"
+        - $ref: "#/components/parameters/bar_code"
+      responses:
+        "200":
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessProductFetch"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
+  /info:
+    get:
+      tags:
+        - info
+      summary: Récupère la liste de tout les types d'informations affichables
+      parameters:
+        - $ref: "#/components/parameters/token"
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessFetchFieldNameList"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "404":
+          description: Resource Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFound"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
+
+components:
+  schemas:
+    User:
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Nom de l'utilisateur
+        password:
+          type: string
+          format: password
+          description: Mot de passe de l'utilisateur
+    
+    UserProfile:
+      properties:
+        pseudo:
+          type: string
+          example: sufsuf
+          description: Peusdonyme de l'utilisateur
+        profile_picture:
+          type: string
+          example: "string base64"
+          description: Image de l'utilisateur en base64
+        wanted_data:
+          type: array
+          example: [product_name, product_picture, etc]
+          description: Image de l'utilisateur en base64
+
+    SuccessUserConnexion:
+      description: Success connection
+      properties:
+        username:
+          type: string
+          example: "Pseudo User"
+        token:
+          type: string
+          example: "JWT Token"
+    
+    SuccessProductFetch:
+      description: Success request
+      properties:
+        product_name:
+          type: string
+          example: "Perrier"
+        keyword:
+          type: array
+          example: [ "drink", "mineral", "carbonated", "spring", "non-alcoholic", "water", "perrier", "unsweetened", "beverage"]
+        image_url:
+          type: string
+          example: "https://images.openfoodfacts.org/images/products/761/303/583/3272/front_en.149.400.jpg"
+
+    SuccessFetchProductList:
+      description: Success request
+      type: array
+      example: [
+        {
+          product_name: "Perrier",
+          keyword: [ "drink", "non-alcoholic", "water"],
+          image_url: "https://images.openfoodfacts.org/images/products/761/303/583/3272/front_en.149.400.jpg"
+        }
+      ]
+
+    SuccessFetchFieldNameList:
+      description: Success request
+      type: array
+      example: [
+        code,
+        product_name,
+        keywords,
+        image_url,
+        status_verbose,
+        allergens
+      ]
+
+    SuccessNoContent:
+      description: No content
+      properties:
+        message:
+          type: "string"
+          example: "The resource has been deleted"
+
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+    Unauthorized:
+      description: Unauthorized
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code:
+          type: string
+          enum:
+            - unauthorized
+        message:
+          example: "Your request is unauthorized to call this resource"
+
+    BadRequest:
+      description: Bad Request
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code:
+          type: string
+          enum:
+            - bad_request
+        message:
+          example: "The payload do not respect the contract"
+
+    InternalError:
+      description: Internal Error
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code:
+          type: string
+          enum:
+            - internal_error
+        message:
+          example: "Please contact the administrator..."
+
+    NotFound:
+      description: Resource not found
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code:
+          type: string
+          enum:
+            - not_found
+        message:
+          example: "Resource not found"
+
+    Conflict:
+      description: Resource already exists
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code:
+          type: "string"
+          enum:
+            - conflict
+        message:
+          example: "The resource already exists"
+
+  parameters:
+    username:
+      name: username
+      in: query
+      description: User's name
+      required: true
+      schema:
+        type: string
+    password:
+      name: password
+      in: query
+      description: User's password
+      required: true
+      schema:
+        type: string
+        format: password
+    token:
+      name: token
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+    bar_code:
+      name: bar_code
+      in: path
+      description: Bar code of the product to fetch
+      required: true
+      schema:
+        type: integer
