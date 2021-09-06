@@ -33,7 +33,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/SuccessUserConnexion"
         "404":
-          description: Resource not found
+          description: Resource Not Found
           content:
             application/json:
               schema:
@@ -149,7 +149,7 @@ paths:
         - $ref: "#/components/parameters/token"
       responses:
         "204":
-          description: Success Response no content
+          description: Success Response No Content
           content:
             application/json:
               schema:
