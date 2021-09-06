@@ -77,6 +77,8 @@ paths:
       tags:
         - user
       summary: Modifie les informations d'un utilisateur
+      parameters:
+        - $ref: "#/components/parameters/token"
       requestBody:
         required: true
         content:
