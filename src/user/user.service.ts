@@ -1,6 +1,7 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { randomBytes, createHmac } from 'crypto';
 
 import { User } from './user.model';
 @Injectable()
@@ -19,10 +20,15 @@ export class UserService {
     }
 
     async create(username: string, password: string): Promise<object> {
+        await this.checkUserAlreadyExist(username);
+
+        const salt = this.generateRandomString();
+        const hashedPassword = this.encodeSha512String(password, salt);
         const newUser = new this.userModel({
-            username, 
-            password, 
-            desc: null, 
+            username,
+            password: hashedPassword,
+            salt: salt,
+            desc: null,
             image: null
         });
         const res = await newUser.save();
@@ -50,6 +56,16 @@ export class UserService {
         return result;
     }
 
+        //
+    
+    private generateRandomString(): string {
+        return randomBytes(Math.ceil(8)).toString('hex').slice(0, 16);
+    }
+
+    private encodeSha512String(password: string, salt: string): string {
+        return createHmac('sha512', salt).update(password).digest('hex');
+    }
+
     private async findUser(username: string, password: string): Promise<User> {
         const user = await this.userModel.findOne({username: username}).exec();
         if (!user || !this.checkUserAuthenticity(user, password))
@@ -58,9 +74,23 @@ export class UserService {
     }
 
     private checkUserAuthenticity(currentUser: User, password: string): boolean {
-        // TODO: check salt of a user
-        if (!currentUser.password || currentUser.password !== password)
+        if (!currentUser.password || 
+            !currentUser.salt || 
+            currentUser.password !== this.encodeSha512String(password, currentUser.salt))
             return false;
         return true;
+    }
+
+    private async checkUserAlreadyExist(username: string): Promise<void> {
+        const users = await this.retrieveAllUsers();
+
+        users.map(user => {
+            if (user.username === username)
+                throw new ConflictException('The resource already exists.');
+        });
+    }
+
+    private async retrieveAllUsers(): Promise<any> {
+        return await this.userModel.find().exec();
     }
 }
