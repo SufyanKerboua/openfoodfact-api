@@ -1,12 +1,17 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+
 import { AppController } from './app.controller';
-import { UserController } from './user/user.controller';
 import { AppService } from './app.service';
-import { UserService } from './user/user.service';
+import { UserModule } from './user/user.module';
+
 
 @Module({
-  imports: [],
-  controllers: [AppController, UserController],
-  providers: [AppService, UserService],
+  imports: [UserModule, MongooseModule.forRoot(
+    'mongodb+srv://cruddemo:cruddemo@cluster.bzl3m.mongodb.net/crud-demo?retryWrites=true&w=majority'
+    )
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
