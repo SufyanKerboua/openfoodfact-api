@@ -3,25 +3,27 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { randomBytes, createHmac } from 'crypto';
 
+import { AuthService } from 'src/auth/auth.service';
 import { User } from './user.model';
 @Injectable()
 export class UserService {
 
-    constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+    constructor(@InjectModel('User') private readonly userModel: Model<User>, private authService: AuthService) {}
 
     async connect(username: string, password: string): Promise<object> {
         let user;
+        let token;
         try {
             user = await this.findUser(username, password);
+            token = await this.authService.generateToken(user);
         } catch (error) {
             throw new InternalServerErrorException('Error occur in the server.');
         }
-        return user;
+        return token;
     }
 
     async create(username: string, password: string): Promise<object> {
         await this.checkUserAlreadyExist(username);
-
         const salt = this.generateRandomString();
         const hashedPassword = this.encodeSha512String(password, salt);
         const newUser = new this.userModel({
@@ -33,30 +35,32 @@ export class UserService {
         });
         const res = await newUser.save();
         console.log({'res': res})
-        return res;
+        return await this.authService.generateToken(newUser);
     }
 
-    async update(jwt: string, desc: string, image: string): Promise<object> {
-        // TODO: Read JWT token
-        const updatedUser = await this.findUser('test', 'test');
+    async update(user: User, desc: string, image: string): Promise<object> {
+        const updatedUser = await this.userModel.findOne({username: user.username, salt: user.salt}).exec();
+        if (!updatedUser)
+            throw new NotFoundException('Could not find user.');
+
         if (desc)
             updatedUser.desc = desc;
         if (image)
             updatedUser.image = image;
         updatedUser.save();
-        return {"JWTToken": jwt, "UpdatedUser": updatedUser};
+        return await this.authService.generateToken(updatedUser);
+        // return {"UpdatedUser": updatedUser};
     }
 
-    async delete(jwt: string): Promise<any> {
-        // TODO: Read JWT token
-        const result = await this.userModel.deleteOne({username: 'test'}).exec();
+    async delete(user: User): Promise<any> {
+        const result = await this.userModel.deleteOne({username: user.username}).exec();
         if (result.n === 0)
             throw new NotFoundException('Could not find user.');
         console.log(result);
         return result;
     }
 
-        //
+    //
     
     private generateRandomString(): string {
         return randomBytes(Math.ceil(8)).toString('hex').slice(0, 16);

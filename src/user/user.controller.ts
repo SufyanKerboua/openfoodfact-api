@@ -1,9 +1,10 @@
-import { Controller, Get, Query, Post, Patch, Headers, HttpCode, Header, Body, BadRequestException, Delete } from '@nestjs/common';
+import { Request, Controller, Get, Post, Patch, Delete, HttpCode, Header, Headers, Query, Body, BadRequestException, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService) { }
+    constructor(private readonly userService: UserService) {}
     
     @Get()
     @Header('content-type', 'application/json')
@@ -34,26 +35,27 @@ export class UserController {
     }
         
     @Patch()
+    @UseGuards(JwtAuthGuard)
     @HttpCode(201)
     @Header('content-type', 'application/json')
     async updateUser(
-        @Headers('token') jwt: string,
+        @Request() req: any,
         @Body('desc') desc: string,
         @Body('image') image: string
     ): Promise<any> {
         console.log('===> user/patch/');
-        console.log({ 'token': jwt, 'desc': desc, 'image': image });
-        return await this.userService.update(jwt, desc, image);
+        console.log({ 'desc': desc, 'image': image });
+        return await this.userService.update(req.user, desc, image);
     }
 
     @Delete()
+    @UseGuards(JwtAuthGuard)
     @HttpCode(204)
     @Header('content-type', 'application/json')
     async deleteUser(
-        @Headers('token') jwt: string
+        @Request() req: any,
     ): Promise<any> {
         console.log('===> user/delete/');
-        console.log({ 'token': jwt});
-        return await this.userService.delete(jwt);
+        return await this.userService.delete(req.user);
     }
 }

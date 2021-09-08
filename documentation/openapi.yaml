@@ -154,7 +154,6 @@ paths:
       summary: Récupère la liste de tout les produits enregistrés
       parameters:
         - $ref: "#/components/parameters/token"
-        - $ref: "#/components/parameters/bar_code"
       responses:
         "200":
           description: Success Response
