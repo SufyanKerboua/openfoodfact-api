@@ -32,6 +32,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessUserConnexion"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequest"
         "404":
           description: Resource Not Found
           content:
@@ -61,6 +67,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessUserConnexion"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequest"
         "409":
           description: Conflict
           content:
@@ -77,6 +89,8 @@ paths:
       tags:
         - user
       summary: Modifie les informations d'un utilisateur
+      parameters:
+        - $ref: "#/components/parameters/token"
       requestBody:
         required: true
         content:
@@ -108,6 +122,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/InternalError"
+    delete:
+      tags:
+        - user
+      summary: Permet de supprimer un utilisateur
+      parameters:
+        - $ref: "#/components/parameters/token"
+      responses:
+        "204":
+          description: Success Response No Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessNoContent"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Unauthorized"
+        "500":
+          description: Internal Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalError"
   /product:
     get:
       tags:
@@ -115,7 +154,6 @@ paths:
       summary: Récupère la liste de tout les produits enregistrés
       parameters:
         - $ref: "#/components/parameters/token"
-        - $ref: "#/components/parameters/bar_code"
       responses:
         "200":
           description: Success Response
