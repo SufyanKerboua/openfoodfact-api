@@ -7,7 +7,6 @@ import { AuthService } from 'src/auth/auth.service';
 import { User } from './user.model';
 @Injectable()
 export class UserService {
-
     constructor(@InjectModel('User') private readonly userModel: Model<User>, private authService: AuthService) {}
 
     async connect(username: string, password: string): Promise<object> {

@@ -9,7 +9,7 @@ export class AuthService {
     ) {}
     
     async generateToken(user: User): Promise<object> {
-        const payload = { username: user.username, salt: user.salt };
+        const payload = { username: user.username, salt: user.salt, id: user._id };
         return {
             access_token: this.jwtService.sign(payload),
         };
