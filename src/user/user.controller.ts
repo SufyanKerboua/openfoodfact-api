@@ -45,7 +45,7 @@ export class UserController {
     ): Promise<any> {
         console.log('===> user/patch/');
         console.log({ 'desc': desc, 'image': image });
-        return await this.userService.update(req.user, desc, image);
+        return this.userService.update(req.user, desc, image);
     }
 
     @Delete()
@@ -56,6 +56,6 @@ export class UserController {
         @Request() req: any,
     ): Promise<any> {
         console.log('===> user/delete/');
-        return await this.userService.delete(req.user);
+        return this.userService.delete(req.user);
     }
 }

@@ -5,6 +5,7 @@ export const ProductSchema = new mongoose.Schema({
     bar_code: { type: String, required: true },
     product_name: { type: String, required: true },
     image_url: { type: String, required: true },
+    data: { type: Object, required: false },
 });
 
 export interface Product extends mongoose.Document {
@@ -13,4 +14,5 @@ export interface Product extends mongoose.Document {
     bar_code: string;
     product_name: string;
     image_url: string;
+    data: object;
 }

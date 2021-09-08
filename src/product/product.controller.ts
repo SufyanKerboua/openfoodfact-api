@@ -13,7 +13,7 @@ export class ProductController {
         @Request() req: any
     ): Promise<any> {
         console.log('===> product/get/');
-        return await this.productService.fetchProducts();
+        return this.productService.fetchProducts(req.user);
     }
 
     @Delete()
@@ -24,20 +24,17 @@ export class ProductController {
         @Request() req: any
     ): Promise<any> {
         console.log('===> product/delete/');
-        await this.productService.deleteProducts();
-        return {};
+        return this.productService.deleteProducts(req.user);
     }
 
     @Get(':bar_code')
     @UseGuards(JwtAuthGuard)
     @Header('content-type', 'application/json')
     async fetchProduct(
-        @Request() req: any,
         @Param('bar_code') bar_code: string
     ): Promise<any> {
         console.log('===> product:bar_code/get/');
-        console.log({'bar code': bar_code});
-        return await this.productService.fetchProduct(bar_code);
+        return this.productService.fetchProduct(bar_code);
     }
 
     @Post(':bar_code')
@@ -48,20 +45,18 @@ export class ProductController {
         @Param('bar_code') bar_code: string
     ): Promise<any> {
         console.log('===> product:bar_code/post/');
-        console.log({'bar code': bar_code});
-        return await this.productService.insertProduct(bar_code);
+        return this.productService.insertProduct(bar_code, req.user);
     }
 
     @Delete(':bar_code')
     @UseGuards(JwtAuthGuard)
-    @HttpCode(204)
+    @HttpCode(200)
     @Header('content-type', 'application/json')
     async deleteProduct(
         @Request() req: any,
         @Param('bar_code') bar_code: string
     ): Promise<any> {
         console.log('===> product:bar_code/delete/');
-        console.log({'bar code': bar_code});
-        return await this.productService.deleteProduct(bar_code);
+        return this.productService.deleteProduct(bar_code, req.user);
     }
 }

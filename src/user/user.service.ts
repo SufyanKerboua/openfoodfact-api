@@ -7,7 +7,10 @@ import { AuthService } from 'src/auth/auth.service';
 import { User } from './user.model';
 @Injectable()
 export class UserService {
-    constructor(@InjectModel('User') private readonly userModel: Model<User>, private authService: AuthService) {}
+    constructor(
+        @InjectModel('User') private readonly userModel: Model<User>, 
+        private authService: AuthService
+        ) {}
 
     async connect(username: string, password: string): Promise<object> {
         let user;
@@ -34,7 +37,7 @@ export class UserService {
         });
         const res = await newUser.save();
         console.log({'res': res})
-        return await this.authService.generateToken(newUser);
+        return this.authService.generateToken(newUser);
     }
 
     async update(user: User, desc: string, image: string): Promise<object> {
@@ -47,7 +50,7 @@ export class UserService {
         if (image)
             updatedUser.image = image;
         updatedUser.save();
-        return await this.authService.generateToken(updatedUser);
+        return this.authService.generateToken(updatedUser);
         // return {"UpdatedUser": updatedUser};
     }
 
@@ -94,6 +97,6 @@ export class UserService {
     }
 
     private async retrieveAllUsers(): Promise<any> {
-        return await this.userModel.find().exec();
+        return this.userModel.find().exec();
     }
 }

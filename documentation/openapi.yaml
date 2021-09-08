@@ -15,8 +15,6 @@ tags:
     description: Gestion des produits
   - name: info
     description: Gestion des informations de l'API OpenFoodFact
-  - name: openfoodfact
-    description: Communication avec l'API OpenFoodFact
 
 paths:
   /user:
@@ -303,39 +301,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/InternalError"
-  /openfoodfact/{bar_code}:
-    get:
-      tags:
-        - openfoodfact
-      summary: Call l'api d'OpenFoodFact avec un code barre
-      parameters:
-        - $ref: "#/components/parameters/token"
-      responses:
-        "200":
-          description: Success response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessProductFactFetch"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Unauthorized"
-        "404":
-          description: Resource Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotFound"
-        "500":
-          description: Internal Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/InternalError"
-
   /info:
     get:
       tags:
@@ -412,12 +377,18 @@ components:
     SuccessProductFetch:
       description: Success request
       properties:
-        product_name:
-          type: string
-          example: "Perrier"
         bar_code:
           type: integer
-          example: 9821218271
+          example: 900296251812
+        product_name:
+          type: "string"
+          example: "The resource has been deleted"
+        brands:
+          type: "string"
+          example: "The resource has been deleted"
+        ingredients_text:
+          type: string
+          example: "Noodle: rice, water. seasoning packet: peanut, sugar"
         image_url:
           type: string
           example: "https://images.openfoodfacts.org/images/products/761/303/583/3272/front_en.149.400.jpg"
@@ -445,22 +416,6 @@ components:
         allergens
       ]
 
-    SuccessProductFactFetch:
-      description: Success Request
-      properties:
-        bar_code:
-          type: integer
-          example: 900296251812
-        product_name:
-          type: "string"
-          example: "The resource has been deleted"
-        brands:
-          type: "string"
-          example: "The resource has been deleted"
-        ingredients_text:
-          type: string
-          example: "Noodle: rice, water. seasoning packet: peanut, sugar"
-        
     SuccessNoContent:
       description: No content
       properties:
