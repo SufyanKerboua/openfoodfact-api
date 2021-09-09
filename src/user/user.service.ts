@@ -12,7 +12,7 @@ export class UserService {
         private authService: AuthService
         ) {}
 
-    async connect(username: string, password: string): Promise<object> {
+    async connect(username: string, password: string): Promise<any> {
         let user;
         let token;
         try {
@@ -21,10 +21,17 @@ export class UserService {
         } catch (error) {
             throw new InternalServerErrorException('Error occur in the server.');
         }
-        return token;
+        return { 
+            'token': token.token, 
+            'user': {
+                'username': user.username,
+                'desc': user.desc,
+                'image': user.image
+            } 
+        };
     }
 
-    async create(username: string, password: string): Promise<object> {
+    async create(username: string, password: string): Promise<any> {
         await this.checkUserAlreadyExist(username);
         const salt = this.generateRandomString();
         const hashedPassword = this.encodeSha512String(password, salt);
@@ -36,12 +43,20 @@ export class UserService {
             image: null
         });
         const res = await newUser.save();
+        const token = await this.authService.generateToken(newUser);
         console.log({'res': res})
-        return this.authService.generateToken(newUser);
+        return { 
+            'token': token.token, 
+            'user': {
+                'username': newUser.username,
+                'desc': newUser.desc,
+                'image': newUser.image
+            } 
+        };
     }
 
-    async update(user: User, desc: string, image: string): Promise<object> {
-        const updatedUser = await this.userModel.findOne({username: user.username, salt: user.salt}).exec();
+    async update(user: User, desc: string, image: string): Promise<any> {
+        const updatedUser = await this.userModel.findOne({username: user.username, _id: user.id}).exec();
         if (!updatedUser)
             throw new NotFoundException('Could not find user.');
 
@@ -50,16 +65,22 @@ export class UserService {
         if (image)
             updatedUser.image = image;
         updatedUser.save();
-        return this.authService.generateToken(updatedUser);
-        // return {"UpdatedUser": updatedUser};
+        const token = await this.authService.generateToken(updatedUser);
+        return { 
+            'token': token.token, 
+            'user': {
+                'username': updatedUser.username,
+                'desc': updatedUser.desc,
+                'image': updatedUser.image
+            } 
+        };
     }
 
-    async delete(user: User): Promise<any> {
+    async delete(user: User): Promise<string> {
         const result = await this.userModel.deleteOne({username: user.username}).exec();
         if (result.n === 0)
             throw new NotFoundException('Could not find user.');
-        console.log(result);
-        return result;
+        return 'The resource has been deleted';
     }
 
     //

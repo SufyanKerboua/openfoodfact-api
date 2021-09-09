@@ -1,4 +1,4 @@
-import { Request, Controller, Get, Post, Patch, Delete, HttpCode, Header, Headers, Query, Body, BadRequestException, UseGuards } from '@nestjs/common';
+import { Request, Controller, Get, Post, Patch, Delete, HttpCode, Header, Headers, Query, Body, BadRequestException, UseGuards, Response } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserService } from './user.service';
 
@@ -7,8 +7,8 @@ export class UserController {
     constructor(private readonly userService: UserService) {}
     
     @Get()
-    @Header('content-type', 'application/json')
     async fetchUser(
+        @Response() res,
         @Query('username') username: string,
         @Query('password') password: string
     ): Promise<any> {
@@ -16,13 +16,14 @@ export class UserController {
         console.log({ 'user': username });
         if (!username || !password)
             throw new BadRequestException('The payload do not respect the contract.');
-        const currentUser = await this.userService.connect(username, password);
-        return ({currentUser: currentUser})
+        const response = await this.userService.connect(username, password);
+        return res.json({...response});
     }
     
     @Post()
     @Header('content-type', 'application/json')
     async createUser(
+        @Response() res,
         @Body('username') username: string,
         @Body('password') password: string
     ): Promise<any> {
@@ -30,8 +31,8 @@ export class UserController {
         console.log({ 'user': username, 'pass': password });
         if (!username || !password)
             throw new BadRequestException('The payload do not respect the contract.');
-        const newlyUser = await this.userService.create(username, password);
-        return ({user: newlyUser});
+        const response = await this.userService.create(username, password);
+        return res.json({...response});
     }
         
     @Patch()
@@ -39,13 +40,16 @@ export class UserController {
     @HttpCode(201)
     @Header('content-type', 'application/json')
     async updateUser(
+        @Response() res,
         @Request() req: any,
         @Body('desc') desc: string,
         @Body('image') image: string
     ): Promise<any> {
         console.log('===> user/patch/');
         console.log({ 'desc': desc, 'image': image });
-        return this.userService.update(req.user, desc, image);
+        console.log({ 'User': req.user });
+        const response = await this.userService.update(req.user, desc, image);
+        return res.json({...response});
     }
 
     @Delete()

@@ -1,5 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { AnyCnameRecord } from 'dns';
 import { Model } from 'mongoose';
 
 import { AuthService } from 'src/auth/auth.service';
@@ -15,26 +16,31 @@ export class ProductService {
         private openfoodfactService: OpenfoodfactService
         ) {}
 
-    async fetchProducts(userToken: any): Promise<any[]> {
-        const products = await this.retrieveAllProductsFromUserId(userToken.id);
-        return products.map(({bar_code, product_name, image_url}) => ({
+    async fetchProducts(userToken: any): Promise<any> {
+        const rawProducts = await this.retrieveAllProductsFromUserId(userToken.id);
+        const products = rawProducts.map(({bar_code, product_name, image_url}) => ({
             bar_code,
             product_name,
             image_url
         }));
+        const token = await this.authService.updateToken(userToken);
+
+        return {token, products};
     }
 
     async deleteProducts(userToken: any): Promise<any> {
         const result = await this.productModel.deleteMany({id_user: userToken.id}).exec();
         if (!result.n)
             throw new NotFoundException('Could not find any product.');
-        return result;
+        return this.authService.updateToken(userToken);
     }
 
-    async fetchProduct(barCode: string): Promise<FoodFact> {
-        const newFact = await this.openfoodfactService.fetchFact(barCode);
-        console.log({'Fact': newFact});
-        return newFact;
+    async fetchProduct(barCode: string, userToken: any): Promise<any> {
+        const product = await this.openfoodfactService.fetchFact(barCode);
+        console.log({'Fact': product});
+        const token = await this.authService.updateToken(userToken);
+
+        return {token, product};
     }
 
     async insertProduct(barCode: string, userToken: any): Promise<object> {
@@ -52,13 +58,19 @@ export class ProductService {
         return this.authService.updateToken(userToken);
     }
 
+    async deleteProduct(barCode: string, userToken: any): Promise<any> {
+        const result = await this.productModel.deleteOne({id_user: userToken.id, bar_code: barCode}).exec();
+        if (!result.n)
+            throw new NotFoundException('Could not find product.');
+        console.log(result);
+        return this.authService.updateToken(userToken);
+    }
+
     private async checkProductAlreadyExist(barCode: string, userID: string): Promise<void> {
         const products = await this.retrieveAllProductsFromUserId(userID);
-        console.log({'All produ': products});
-
-        console.log({'Product to not store': barCode})
+        // console.log({'All produ': products});
         products.forEach(product => {
-            console.log({'current prod bar': product.bar_code})
+            // console.log({'current prod bar': product.bar_code})
             if (product.bar_code === barCode)
                 throw new ConflictException('The resource already exists.');
         });
@@ -66,13 +78,5 @@ export class ProductService {
 
     private async retrieveAllProductsFromUserId(userID: string): Promise<Product[]> {
         return this.productModel.find({id_user: userID}).exec();
-    }
-
-    async deleteProduct(barCode: string, userToken: any): Promise<any> {
-        const result = await this.productModel.deleteOne({id_user: userToken.id, bar_code: barCode}).exec();
-        if (!result.n)
-            throw new NotFoundException('Could not find product.');
-        console.log(result);
-        return this.authService.updateToken(userToken);
     }
 }
