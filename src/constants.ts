@@ -3,5 +3,5 @@ export const jwtConstants = {
 };
 
 export const mongoDB = {
-    uri: 'mongodb+srv://cruddemo:cruddemo@cluster.bzl3m.mongodb.net/crud-demo?retryWrites=true&w=majority', // replace with a special mongodb uri
+    uri: 'mongodb+srv://:@cluster..mongodb.net/crud-demo?retryWrites=true&w=majority', // replace with a special mongodb uri
 };
