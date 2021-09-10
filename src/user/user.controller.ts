@@ -42,13 +42,12 @@ export class UserController {
     async updateUser(
         @Response() res,
         @Request() req: any,
-        @Body('desc') desc: string,
-        @Body('image') image: string
+        @Body('user') user: any,
     ): Promise<any> {
         console.log('===> user/patch/');
-        console.log({ 'desc': desc, 'image': image });
-        console.log({ 'User': req.user });
-        const response = await this.userService.update(req.user, desc, image);
+        console.log({ 'user': user });
+        console.log({ 'UserToken': req.user });
+        const response = await this.userService.update(req.user, user);
         return res.json({...response});
     }
 

@@ -25,8 +25,7 @@ export class UserService {
             'token': token.token, 
             'user': {
                 'username': user.username,
-                'desc': user.desc,
-                'image': user.image
+                'desc': user.desc
             } 
         };
     }
@@ -40,7 +39,7 @@ export class UserService {
             password: hashedPassword,
             salt: salt,
             desc: null,
-            image: null
+            wanted_data: null
         });
         const res = await newUser.save();
         const token = await this.authService.generateToken(newUser);
@@ -49,21 +48,20 @@ export class UserService {
             'token': token.token, 
             'user': {
                 'username': newUser.username,
-                'desc': newUser.desc,
-                'image': newUser.image
+                'desc': newUser.desc
             } 
         };
     }
 
-    async update(user: User, desc: string, image: string): Promise<any> {
-        const updatedUser = await this.userModel.findOne({username: user.username, _id: user.id}).exec();
+    async update(userToken: any, user: any): Promise<any> {
+        const updatedUser = await this.userModel.findOne({username: userToken.username, _id: userToken.id}).exec();
         if (!updatedUser)
             throw new NotFoundException('Could not find user.');
 
-        if (desc)
-            updatedUser.desc = desc;
-        if (image)
-            updatedUser.image = image;
+        if (user.desc)
+            updatedUser.desc = user.desc;
+        if (user.wanted_data)
+            updatedUser.wanted_data = user.wanted_data;
         updatedUser.save();
         const token = await this.authService.generateToken(updatedUser);
         return { 
@@ -71,7 +69,7 @@ export class UserService {
             'user': {
                 'username': updatedUser.username,
                 'desc': updatedUser.desc,
-                'image': updatedUser.image
+                'wanted_data': updatedUser.wanted_data
             } 
         };
     }
