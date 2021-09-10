@@ -7,10 +7,12 @@ import { AuthService } from 'src/auth/auth.service';
 import { User } from './user.model';
 @Injectable()
 export class UserService {
+    constructor(
+        @InjectModel('User') private readonly userModel: Model<User>, 
+        private authService: AuthService
+        ) {}
 
-    constructor(@InjectModel('User') private readonly userModel: Model<User>, private authService: AuthService) {}
-
-    async connect(username: string, password: string): Promise<object> {
+    async connect(username: string, password: string): Promise<any> {
         let user;
         let token;
         try {
@@ -19,10 +21,16 @@ export class UserService {
         } catch (error) {
             throw new InternalServerErrorException('Error occur in the server.');
         }
-        return token;
+        return { 
+            'token': token.token, 
+            'user': {
+                'username': user.username,
+                'desc': user.desc
+            } 
+        };
     }
 
-    async create(username: string, password: string): Promise<object> {
+    async create(username: string, password: string): Promise<any> {
         await this.checkUserAlreadyExist(username);
         const salt = this.generateRandomString();
         const hashedPassword = this.encodeSha512String(password, salt);
@@ -31,33 +39,46 @@ export class UserService {
             password: hashedPassword,
             salt: salt,
             desc: null,
-            image: null
+            wanted_data: null
         });
         const res = await newUser.save();
+        const token = await this.authService.generateToken(newUser);
         console.log({'res': res})
-        return await this.authService.generateToken(newUser);
+        return { 
+            'token': token.token, 
+            'user': {
+                'username': newUser.username,
+                'desc': newUser.desc
+            } 
+        };
     }
 
-    async update(user: User, desc: string, image: string): Promise<object> {
-        const updatedUser = await this.userModel.findOne({username: user.username, salt: user.salt}).exec();
+    async update(userToken: any, user: any): Promise<any> {
+        const updatedUser = await this.userModel.findOne({username: userToken.username, _id: userToken.id}).exec();
         if (!updatedUser)
             throw new NotFoundException('Could not find user.');
 
-        if (desc)
-            updatedUser.desc = desc;
-        if (image)
-            updatedUser.image = image;
+        if (user.desc)
+            updatedUser.desc = user.desc;
+        if (user.wanted_data)
+            updatedUser.wanted_data = user.wanted_data;
         updatedUser.save();
-        return await this.authService.generateToken(updatedUser);
-        // return {"UpdatedUser": updatedUser};
+        const token = await this.authService.generateToken(updatedUser);
+        return { 
+            'token': token.token, 
+            'user': {
+                'username': updatedUser.username,
+                'desc': updatedUser.desc,
+                'wanted_data': updatedUser.wanted_data
+            } 
+        };
     }
 
-    async delete(user: User): Promise<any> {
+    async delete(user: User): Promise<string> {
         const result = await this.userModel.deleteOne({username: user.username}).exec();
         if (result.n === 0)
             throw new NotFoundException('Could not find user.');
-        console.log(result);
-        return result;
+        return 'The resource has been deleted';
     }
 
     //
@@ -95,6 +116,6 @@ export class UserService {
     }
 
     private async retrieveAllUsers(): Promise<any> {
-        return await this.userModel.find().exec();
+        return this.userModel.find().exec();
     }
 }

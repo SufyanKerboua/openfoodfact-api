@@ -5,7 +5,7 @@ info:
   title: OpenFoodCRUD
 
 servers:
-  - url: https://localhost:3000
+  - url: https://localhost:8081
     description: Developpement
 
 tags:
@@ -28,6 +28,9 @@ paths:
       responses:
         "200":
           description: Success Response
+          headers:
+            token:
+              $ref: '#/components/schemas/token'
           content:
             application/json:
               schema:
@@ -63,6 +66,9 @@ paths:
       responses:
         "201":
           description: Success Response
+          headers:
+            token:
+              $ref: '#/components/schemas/token'
           content:
             application/json:
               schema:
@@ -100,6 +106,9 @@ paths:
       responses:
         "201": 
           description: Success Response
+          headers:
+            token:
+              $ref: '#/components/schemas/token'
           content:
             application/json:
               schema:
@@ -157,6 +166,9 @@ paths:
       responses:
         "200":
           description: Success Response
+          headers:
+            token:
+              $ref: '#/components/schemas/token'
           content:
             application/json:
               schema:
@@ -188,6 +200,9 @@ paths:
       responses:
         "204":
           description: Success Response No Content
+          headers:
+            token:
+              $ref: '#/components/schemas/token'
           content:
             application/json:
               schema:
@@ -215,6 +230,9 @@ paths:
       responses:
         "200":
           description: Success Response
+          headers:
+            token:
+              $ref: '#/components/schemas/token'
           content:
             application/json:
               schema:
@@ -247,6 +265,9 @@ paths:
       responses:
         "200":
           description: Success Response
+          headers:
+            token:
+              $ref: '#/components/schemas/token'
           content:
             application/json:
               schema:
@@ -279,6 +300,9 @@ paths:
       responses:
         "200":
           description: Success Response
+          headers:
+            token:
+              $ref: '#/components/schemas/token'
           content:
             application/json:
               schema:
@@ -311,6 +335,9 @@ paths:
       responses:
         "200":
           description: Success response
+          headers:
+            token:
+              $ref: '#/components/schemas/token'
           content:
             application/json:
               schema:
@@ -370,19 +397,22 @@ components:
         username:
           type: string
           example: "Pseudo User"
-        token:
-          type: string
-          example: "JWT Token"
     
     SuccessProductFetch:
       description: Success request
       properties:
+        bar_code:
+          type: integer
+          example: 900296251812
         product_name:
+          type: "string"
+          example: "The resource has been deleted"
+        brands:
+          type: "string"
+          example: "The resource has been deleted"
+        ingredients_text:
           type: string
-          example: "Perrier"
-        keyword:
-          type: array
-          example: [ "drink", "mineral", "carbonated", "spring", "non-alcoholic", "water", "perrier", "unsweetened", "beverage"]
+          example: "Noodle: rice, water. seasoning packet: peanut, sugar"
         image_url:
           type: string
           example: "https://images.openfoodfacts.org/images/products/761/303/583/3272/front_en.149.400.jpg"
@@ -393,8 +423,8 @@ components:
       example: [
         {
           product_name: "Perrier",
-          keyword: [ "drink", "non-alcoholic", "water"],
-          image_url: "https://images.openfoodfacts.org/images/products/761/303/583/3272/front_en.149.400.jpg"
+          bar_code: 9821218271,
+          image_url: "https://images.openfoodfacts.org/images/400.jpg"
         }
       ]
 
@@ -487,6 +517,10 @@ components:
         message:
           example: "The resource already exists"
 
+    token:
+      description: User token.
+      type: string
+
   parameters:
     username:
       name: username
@@ -517,3 +551,5 @@ components:
       required: true
       schema:
         type: integer
+
+    

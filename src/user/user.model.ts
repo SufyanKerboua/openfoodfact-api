@@ -5,7 +5,7 @@ export const UserSchema = new mongoose.Schema({
     password: { type: String, required: true },
     salt: { type: String, required: true },
     desc: { type: String, required: false },
-    image: { type: String, required: false }
+    wanted_data: { type: Object, required: false }
 });
 
 export interface User extends mongoose.Document {
@@ -14,5 +14,5 @@ export interface User extends mongoose.Document {
     password: string;
     salt: string;
     desc: string;
-    image: string;
+    wanted_data: object;
 }
