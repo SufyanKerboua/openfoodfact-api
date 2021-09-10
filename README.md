@@ -37,7 +37,7 @@ $ npm install
 # installation des packets manquants
 ```
 
-A noter que toutes les configurations concernant l'API sont situées dans le fichier **src/constants.js**.
+A noter que toutes les configurations concernant l'API sont situées dans le fichier **src/constants.ts**.
 
 ## Scripts disponibles
 
