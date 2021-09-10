@@ -10,6 +10,7 @@ export class OpenfoodfactService {
         let fact = await (await this.httpService.get(`https://world.openfoodfacts.org/api/v0/product/${barCode}.json`).toPromise()).data;
         if (fact.status === 0)
             throw new NotFoundException(`The bar code: ${barCode}, doesn't coorespond to any product.`);
+        // TODO: Rajouter un systeme permettant de stocker dynamiquement des champs désirés
         return new FoodFact(
             barCode,
             fact.product.product_name,
