@@ -1,50 +1,55 @@
 # openfoodfact-api
 
+Le but de cette API NestJS est de pouvoir obtenir des informations sur des codes barres via l'API OpenFoodFact.
 ## Description
 
-L'objectif de cette API NestJS est de permettre d'obtenir des informations sur des codes barres via l'API OpenFoodFact.
+Cette API permet les fonctionnalités suivantes :
+
+- Inscription d'un utilisateur via username / password
+- Authentification d'un utilisateur via username / password
+- Sur une route authentifiée, permettre la recherche d'un produit par son code barre sur l'API de OpenFoodFacts
+- Suppression de toutes les produits d'un utilisateur
+- Mise à jour du profil de l'utilisateur
+- Suppression du profil de l'utilisateur
+
+## Documentation
+
+2 types de documentation ont été réalisé concernant ce projet:
+- Un swagger de l'API
+- Architecture de BDD
+
+## Language de programmation
+
+Concernant chaque partie du projet coté back-end voici les languages/frameworks/API utilisée.
+- **Frame-work Back-end:** `NestJS`
+- **BDD:** `MongoDB`
+- **API externe:** `API OpenFoodFact`
+
+### Dépendences NestJS
+- axios
+- passport-jwt
+- mongoose
 
 ## Installation
 
 ```bash
 $ npm install
+# installation des packets manquants
 ```
 
-```
-change constants in Auth
-Add config file to connect to the bdd
-```
+A noter que toutes les configurations concernant l'API sont situées dans le fichier **src/constants.js**.
 
-## Running the app
+## Scripts disponibles
 
 ```bash
-# development
+# mode development
 $ npm run start
-
-# watch mode
-$ npm run start:dev
 
 # production mode
 $ npm run start:prod
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Author
+## Auteur
 
 - Sufyan Kerboua
 
-## License
-
-Nest is [MIT licensed](LICENSE).

@@ -38,12 +38,10 @@ export class UserService {
             username,
             password: hashedPassword,
             salt: salt,
-            desc: null,
-            wanted_data: null
+            desc: null
         });
         const res = await newUser.save();
         const token = await this.authService.generateToken(newUser);
-        console.log({'res': res})
         return { 
             'token': token.token, 
             'user': {
@@ -57,19 +55,20 @@ export class UserService {
         const updatedUser = await this.userModel.findOne({username: userToken.username, _id: userToken.id}).exec();
         if (!updatedUser)
             throw new NotFoundException('Could not find user.');
-
-        if (user.desc)
-            updatedUser.desc = user.desc;
-        if (user.wanted_data)
-            updatedUser.wanted_data = user.wanted_data;
-        updatedUser.save();
+        
+        if (user) {
+            if (user.username)
+                updatedUser.username = user.username;
+            if (user.desc)
+                updatedUser.desc = user.desc;
+            updatedUser.save();
+        }
         const token = await this.authService.generateToken(updatedUser);
         return { 
             'token': token.token, 
             'user': {
                 'username': updatedUser.username,
-                'desc': updatedUser.desc,
-                'wanted_data': updatedUser.wanted_data
+                'desc': updatedUser.desc
             } 
         };
     }
@@ -80,8 +79,6 @@ export class UserService {
             throw new NotFoundException('Could not find user.');
         return 'The resource has been deleted';
     }
-
-    //
     
     private generateRandomString(): string {
         return randomBytes(Math.ceil(8)).toString('hex').slice(0, 16);
