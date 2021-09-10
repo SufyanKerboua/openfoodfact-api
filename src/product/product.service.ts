@@ -25,7 +25,7 @@ export class ProductService {
         }));
         const token = await this.authService.updateToken(userToken);
 
-        return {token, products};
+        return {...token, products};
     }
 
     async deleteProducts(userToken: any): Promise<any> {
@@ -37,10 +37,9 @@ export class ProductService {
 
     async fetchProduct(barCode: string, userToken: any): Promise<any> {
         const product = await this.openfoodfactService.fetchFact(barCode);
-        console.log({'Fact': product});
         const token = await this.authService.updateToken(userToken);
 
-        return {token, product};
+        return {...token, product};
     }
 
     async insertProduct(barCode: string, userToken: any): Promise<object> {
@@ -50,11 +49,9 @@ export class ProductService {
             id_user: userToken.id,
             bar_code: newFact.bar_code,
             product_name: newFact.product_name,
-            image_url: newFact.image_url,
-            data: {}
+            image_url: newFact.image_url
         });
         const res = await newProduct.save();
-        console.log({'res': res})
         return this.authService.updateToken(userToken);
     }
 
@@ -62,15 +59,12 @@ export class ProductService {
         const result = await this.productModel.deleteOne({id_user: userToken.id, bar_code: barCode}).exec();
         if (!result.n)
             throw new NotFoundException('Could not find product.');
-        console.log(result);
         return this.authService.updateToken(userToken);
     }
 
     private async checkProductAlreadyExist(barCode: string, userID: string): Promise<void> {
         const products = await this.retrieveAllProductsFromUserId(userID);
-        // console.log({'All produ': products});
         products.forEach(product => {
-            // console.log({'current prod bar': product.bar_code})
             if (product.bar_code === barCode)
                 throw new ConflictException('The resource already exists.');
         });

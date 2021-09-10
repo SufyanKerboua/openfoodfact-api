@@ -1,4 +1,4 @@
-import { Request, Controller, Get, Post, Patch, Delete, HttpCode, Header, Headers, Query, Body, BadRequestException, UseGuards, Response } from '@nestjs/common';
+import { Request, Controller, Get, Post, Patch, Delete, HttpCode, Header, Query, Body, BadRequestException, UseGuards, Response } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserService } from './user.service';
 
@@ -12,8 +12,6 @@ export class UserController {
         @Query('username') username: string,
         @Query('password') password: string
     ): Promise<any> {
-        console.log('===> user/get/');
-        console.log({ 'user': username });
         if (!username || !password)
             throw new BadRequestException('The payload do not respect the contract.');
         const response = await this.userService.connect(username, password);
@@ -27,8 +25,6 @@ export class UserController {
         @Body('username') username: string,
         @Body('password') password: string
     ): Promise<any> {
-        console.log('===> user/post/');
-        console.log({ 'user': username, 'pass': password });
         if (!username || !password)
             throw new BadRequestException('The payload do not respect the contract.');
         const response = await this.userService.create(username, password);
@@ -44,9 +40,6 @@ export class UserController {
         @Request() req: any,
         @Body('user') user: any,
     ): Promise<any> {
-        console.log('===> user/patch/');
-        console.log({ 'user': user });
-        console.log({ 'UserToken': req.user });
         const response = await this.userService.update(req.user, user);
         return res.json({...response});
     }
@@ -58,7 +51,6 @@ export class UserController {
     async deleteUser(
         @Request() req: any,
     ): Promise<any> {
-        console.log('===> user/delete/');
         return this.userService.delete(req.user);
     }
 }

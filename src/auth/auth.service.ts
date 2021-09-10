@@ -16,7 +16,6 @@ export class AuthService {
     }
     
     async updateToken(userToken: any): Promise<object> {
-        console.log({'token': userToken});
         const payload = { username: userToken.username, id: userToken.id };
         return {
             token: this.jwtService.sign(payload),

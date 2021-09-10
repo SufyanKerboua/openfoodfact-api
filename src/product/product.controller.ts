@@ -13,20 +13,18 @@ export class ProductController {
         @Response() res: any,
         @Request() req: any
     ): Promise<any> {
-        console.log('===> product/get/');
         const response = await this.productService.fetchProducts(req.user);
         return res.json({...response});
     }
 
     @Delete()
     @UseGuards(JwtAuthGuard)
-    @HttpCode(204)
+    @HttpCode(200)
     @Header('content-type', 'application/json')
     async deleteProducts(
         @Response() res: any,
         @Request() req: any
     ): Promise<any> {
-        console.log('===> product/delete/');
         const token = await this.productService.deleteProducts(req.user);
         return res.json({...token});
     }
@@ -39,7 +37,6 @@ export class ProductController {
         @Request() req: any,
         @Param('bar_code') bar_code: string
     ): Promise<any> {
-        console.log('===> product:bar_code/get/');
         const response = await this.productService.fetchProduct(bar_code, req.user);
         return res.json({...response});
     }
@@ -52,7 +49,6 @@ export class ProductController {
         @Request() req: any,
         @Param('bar_code') bar_code: string
     ): Promise<any> {
-        console.log('===> product:bar_code/post/');
         const token = await this.productService.insertProduct(bar_code, req.user);
         return res.json({...token});
     }
@@ -66,7 +62,6 @@ export class ProductController {
         @Request() req: any,
         @Param('bar_code') bar_code: string
     ): Promise<any> {
-        console.log('===> product:bar_code/delete/');
         const token = await this.productService.deleteProduct(bar_code, req.user);
         return res.json({...token});
     }

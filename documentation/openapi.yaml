@@ -13,8 +13,6 @@ tags:
     description: Gestion des utilisateurs
   - name: product
     description: Gestion des produits
-  - name: info
-    description: Gestion des informations de l'API OpenFoodFact
 
 paths:
   /user:
@@ -206,7 +204,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessNoContent"
+                $ref: "#/components/schemas/SuccessTokenResponse"
         "401":
           description: Unauthorized
           content:
@@ -306,42 +304,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessProductFetch"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Unauthorized"
-        "404":
-          description: Resource Not Found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotFound"
-        "500":
-          description: Internal Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/InternalError"
-  /info:
-    get:
-      tags:
-        - info
-      summary: Récupère la liste de tout les types d'informations affichables
-      parameters:
-        - $ref: "#/components/parameters/token"
-      responses:
-        "200":
-          description: Success response
-          headers:
-            token:
-              $ref: '#/components/schemas/token'
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessFetchFieldNameList"
+                $ref: "#/components/schemas/SuccessTokenResponse"
         "401":
           description: Unauthorized
           content:
@@ -378,67 +341,63 @@ components:
     
     UserProfile:
       properties:
-        pseudo:
+        username:
           type: string
-          example: sufsuf
+          example: Pierre
           description: Peusdonyme de l'utilisateur
-        profile_picture:
+        desc:
           type: string
-          example: "string base64"
-          description: Image de l'utilisateur en base64
-        wanted_data:
-          type: array
-          example: [product_name, product_picture, etc]
-          description: Image de l'utilisateur en base64
+          example: "Ce que vous voulez"
+          description: description de l'utilisateur
 
     SuccessUserConnexion:
       description: Success connection
       properties:
-        username:
+        token:
           type: string
-          example: "Pseudo User"
+          example: "eyJhbGciOiJIU.zI1NiIsInR5cCI6I.kpXVCJ9eyJ1c2Vy"
+        user:
+          type: object
+          example:
+            username: "Pseudo User"
+            desc: "Description de l'utilisateur"
     
     SuccessProductFetch:
       description: Success request
       properties:
-        bar_code:
-          type: integer
-          example: 900296251812
-        product_name:
-          type: "string"
-          example: "The resource has been deleted"
-        brands:
-          type: "string"
-          example: "The resource has been deleted"
-        ingredients_text:
+        token:
           type: string
-          example: "Noodle: rice, water. seasoning packet: peanut, sugar"
-        image_url:
-          type: string
-          example: "https://images.openfoodfacts.org/images/products/761/303/583/3272/front_en.149.400.jpg"
+          example: "eyJhbGciOiJIU.zI1NiIsInR5cCI6I.kpXVCJ9eyJ1c2Vy"
+        product:
+          type: object
+          example:
+            bar_code: "900296251812"
+            product_name: "Noodle"
+            brands: "Best noodle ever"
+            ingredients_text: "Noodle: rice, water. seasoning packet: peanut, sugar"
+            image_url: "https://images.openfoodfacts.org/images400.jpg"
 
     SuccessFetchProductList:
       description: Success request
-      type: array
-      example: [
-        {
-          product_name: "Perrier",
-          bar_code: 9821218271,
-          image_url: "https://images.openfoodfacts.org/images/400.jpg"
-        }
-      ]
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIU.zI1NiIsInR5cCI6I.kpXVCJ9eyJ1c2Vy"
+        products:
+          type: array
+          example: [
+            {
+              bar_code: "900296251812",
+              product_name: "Crunch bar",
+              image_url: "https://images.openfoodfacts.org/images.jpg"
+            }
+          ]
 
-    SuccessFetchFieldNameList:
-      description: Success request
-      type: array
-      example: [
-        code,
-        product_name,
-        keywords,
-        image_url,
-        status_verbose,
-        allergens
-      ]
+    SuccessTokenResponse:
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIU.zI1NiIsInR5cCI6I.kpXVCJ9eyJ1c2Vy"
 
     SuccessNoContent:
       description: No content
