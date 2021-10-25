@@ -49,6 +49,9 @@ $ npm run start
 $ npm run start:prod
 ```
 
+## Demo
+
+[![Watch the video](https://img.youtube.com/vi/5ZX718JnuoA/maxresdefault.jpg)](https://youtu.be/5ZX718JnuoA) 
 ## Auteur
 
 - Sufyan Kerboua
